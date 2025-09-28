@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: Web-test3
+    env: python
+    buildCommand: ""
+    startCommand: "python main.py"

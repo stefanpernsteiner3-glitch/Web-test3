@@ -1,0 +1,14 @@
+from flask import Flask, send_from_directory
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return '<h1>Hallo Stefan – deine Render-Webseite läuft!</h1>'
+
+@app.route('/pdf/<filename>')
+def serve_pdf(filename):
+    return send_from_directory('static', filename)
+
+if __name__ == '__main__':
+    app.run()
