@@ -13,7 +13,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 ALLOWED_EXTENSIONS = {'.pdf', '.docx', '.pptx', '.xlsx'}
-PASSWORD = 'perniws'  # Dein Passwort
+PASSWORD = 'perniws3'  # Dein Passwort
 
 # 🔐 Login mit exponentieller Wartezeit
 @app.route('/', methods=['GET', 'POST'])
@@ -22,26 +22,30 @@ def login():
     last_fail = session.get('last_fail', 0)
     now = time.time()
 
-    # Wartezeit berechnen
-    if fail_count > 0:
-        wait_time = min(2 ** fail_count, 300)  # Max. 5 Minuten
-        if now - last_fail < wait_time:
-            remaining = int(wait_time - (now - last_fail))
-            return f'<p>Zu viele Fehlversuche. Bitte warte {remaining} Sekunden.</p>'
 
+        # Wartezeit prüfen NUR bei POST
     if request.method == 'POST':
-        entered = request.form.get('password')
-        if entered == PASSWORD:
-            session['authenticated'] = True
-            session['fail_count'] = 0
-            return redirect(url_for('upload_file'))
-        else:
-            session['fail_count'] = fail_count + 1
-            session['last_fail'] = now
-            return '<p>Falsches Passwort!</p>'
+
+    # Wartezeit berechnen
+        if fail_count > 0:
+            wait_time = min(2 ** fail_count, 300)  # Max. 5 Minuten
+            if now - last_fail < wait_time:
+                remaining = int(wait_time - (now - last_fail))
+                return f'<p>Zu viele Fehlversuche. Bitte warte {remaining} Sekunden.</p>'
+
+        if request.method == 'POST':
+            entered = request.form.get('password')
+            if entered == PASSWORD:
+                session['authenticated'] = True
+                session['fail_count'] = 0
+                return redirect(url_for('upload_file'))
+            else:
+                session['fail_count'] = fail_count + 1
+                session['last_fail'] = now
+                return '<p>Falsches Passwort!</p>'
 
     return '''
-        <h2>Passwort erforderlich</h2>
+        <h2>Perni's Web</h2>
         <form method="POST">
             <input type="password" name="password" placeholder="Passwort eingeben">
             <button type="submit">Login</button>
@@ -131,5 +135,5 @@ def logout():
 
 # 🚀 Port-Handling für Render
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 1000))
     app.run(host='0.0.0.0', port=port)
